@@ -41,10 +41,22 @@ describe('Bigtable/Cluster', function() {
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
+  // var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
+  //   instance: INSTANCE.id,
+  //   cluster: CLUSTER_NAME,
+  // });
+
+  var CLUSTER_ID = format('{cluster}', {
     instance: INSTANCE.id,
     cluster: CLUSTER_NAME,
   });
+
+
+
+
+
+
+
 
   var Cluster;
   var cluster;
