@@ -37,14 +37,31 @@ function Cluster(instance, id) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
+<<<<<<< HEAD
   //var id = name;
 
   if (id.indexOf('/') === -1) {
     id = `${instance.projectName}/clusters/${id}`;
   }
+=======
+  // var id = name;
 
+  // if (id.indexOf('/') === -1) {
+  //   id = `${instance.id}/clusters/${name}`;
+  // }
+
+  // this.id = id;
+  // this.name = id.split('/').pop();
+>>>>>>> 0115a1267f1ce36699634fa2eea103c4e40480a0
+
+  var name1 = name;
+  if (name1.indexOf('/') === -1) {
+    name1 = `${instance.id}/clusters/$(name)`;
+  }
+  this.name = name1;
+  var id = name1.split('/').pop();
   this.id = id;
-  this.name = id.split('/').pop();
+
 }
 
 /**
@@ -60,7 +77,7 @@ function Cluster(instance, id) {
  * Cluster.getLocation_('my-project', 'us-central1-b');
  * // 'projects/my-project/locations/us-central1-b'
  */
-Cluster.getLocation_ = function(project, location) {
+Cluster.getLocation_ = function (project, location) {
   if (location.indexOf('/') > -1) {
     return location;
   }
@@ -88,7 +105,7 @@ Cluster.getLocation_ = function(project, location) {
  * Cluster.getStorageType_('ssd');
  * // 1
  */
-Cluster.getStorageType_ = function(type) {
+Cluster.getStorageType_ = function (type) {
   var storageTypes = {
     unspecified: 0,
     ssd: 1,
@@ -138,7 +155,7 @@ Cluster.getStorageType_ = function(type) {
  *   const apiResponse = data[2];
  * });
  */
-Cluster.prototype.create = function(options, callback) {
+Cluster.prototype.create = function (options, callback) {
   if (is.fn(options)) {
     callback = options;
     options = {};
@@ -167,7 +184,7 @@ Cluster.prototype.create = function(options, callback) {
  *   var apiResponse = data[0];
  * });
  */
-Cluster.prototype.delete = function(gaxOptions, callback) {
+Cluster.prototype.delete = function (gaxOptions, callback) {
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
@@ -206,13 +223,13 @@ Cluster.prototype.delete = function(gaxOptions, callback) {
  *   var exists = data[0];
  * });
  */
-Cluster.prototype.exists = function(gaxOptions, callback) {
+Cluster.prototype.exists = function (gaxOptions, callback) {
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  this.getMetadata(gaxOptions, function(err) {
+  this.getMetadata(gaxOptions, function (err) {
     if (err) {
       if (err.code === 5) {
         callback(null, false);
@@ -250,7 +267,7 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Cluster.prototype.get = function(gaxOptions, callback) {
+Cluster.prototype.get = function (gaxOptions, callback) {
   var self = this;
 
   if (is.fn(gaxOptions)) {
@@ -258,7 +275,7 @@ Cluster.prototype.get = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  this.getMetadata(gaxOptions, function(err, metadata) {
+  this.getMetadata(gaxOptions, function (err, metadata) {
     callback(err, err ? null : self, metadata);
   });
 };
@@ -285,7 +302,7 @@ Cluster.prototype.get = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Cluster.prototype.getMetadata = function(gaxOptions, callback) {
+Cluster.prototype.getMetadata = function (gaxOptions, callback) {
   var self = this;
 
   if (is.fn(gaxOptions)) {
@@ -302,7 +319,7 @@ Cluster.prototype.getMetadata = function(gaxOptions, callback) {
       },
       gaxOpts: gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         self.metadata = args[1];
       }
@@ -359,7 +376,7 @@ Cluster.prototype.getMetadata = function(gaxOptions, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Cluster.prototype.setMetadata = function(metadata, gaxOptions, callback) {
+Cluster.prototype.setMetadata = function (metadata, gaxOptions, callback) {
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
