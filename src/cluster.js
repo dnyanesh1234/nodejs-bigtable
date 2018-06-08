@@ -36,32 +36,14 @@ var is = require('is');
 function Cluster(instance, id) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
-
-<<<<<<< HEAD
-  //var id = name;
+  var id = name;
 
   if (id.indexOf('/') === -1) {
-    id = `${instance.projectName}/clusters/${id}`;
+    id = `${instance.id}/clusters/${name}`;
   }
-=======
-  // var id = name;
 
-  // if (id.indexOf('/') === -1) {
-  //   id = `${instance.id}/clusters/${name}`;
-  // }
-
-  // this.id = id;
-  // this.name = id.split('/').pop();
->>>>>>> 0115a1267f1ce36699634fa2eea103c4e40480a0
-
-  var name1 = name;
-  if (name1.indexOf('/') === -1) {
-    name1 = `${instance.id}/clusters/$(name)`;
-  }
-  this.name = name1;
-  var id = name1.split('/').pop();
   this.id = id;
-
+  this.name = id.split('/').pop();
 }
 
 /**
