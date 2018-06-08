@@ -33,14 +33,14 @@ var is = require('is');
  * const instance = bigtable.instance('my-instance');
  * const cluster = instance.cluster('my-cluster');
  */
-function Cluster(instance, name) {
+function Cluster(instance, id) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = name;
+  //var id = name;
 
   if (id.indexOf('/') === -1) {
-    id = `${instance.id}/clusters/${name}`;
+    id = `${instance.projectName}/clusters/${id}`;
   }
 
   this.id = id;

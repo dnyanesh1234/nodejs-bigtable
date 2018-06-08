@@ -1,3 +1,8 @@
+
+
+
+
+
 /*!
  * Copyright 2016 Google Inc. All Rights Reserved.
  *
@@ -38,17 +43,15 @@ var Table = require('./table.js');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
-function Instance(bigtable, name) {
+function Instance(bigtable, id) {
   this.bigtable = bigtable;
 
-  var id = name;
-
   if (id.indexOf('/') === -1) {
-    id = bigtable.projectName + '/instances/' + name;
+    id = bigtable.projectName + '/instances/' + id;
   }
 
-  this.id = id;
-  this.name = id.split('/').pop();
+  this.id = id.split('/').pop();
+  this.name = id;
 }
 
 /**
@@ -63,7 +66,7 @@ function Instance(bigtable, name) {
  * Instance.getTypeType_('production');
  * // 1
  */
-Instance.getTypeType_ = function(type) {
+Instance.getTypeType_ = function (type) {
   var types = {
     unspecified: 0,
     production: 1,
@@ -83,7 +86,7 @@ Instance.getTypeType_ = function(type) {
  * @param {string} name The name of the app profile.
  * @returns {AppProfile}
  */
-Instance.prototype.appProfile = function(name) {
+Instance.prototype.appProfile = function (name) {
   return new AppProfile(this, name);
 };
 
@@ -128,13 +131,13 @@ Instance.prototype.appProfile = function(name) {
  *   var apiResponse = data[2];
  * });
  */
-Instance.prototype.create = function(options, callback) {
+Instance.prototype.create = function (options, callback) {
   if (is.fn(options)) {
     callback = options;
     options = {};
   }
 
-  this.bigtable.createInstance(this.name, options, callback);
+  this.bigtable.createInstance(this.id, options, callback);
 };
 
 /**
@@ -188,7 +191,7 @@ Instance.prototype.create = function(options, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Instance.prototype.createAppProfile = function(name, options, callback) {
+Instance.prototype.createAppProfile = function (name, options, callback) {
   const self = this;
 
   if (is.function(options)) {
@@ -203,7 +206,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
   const appProfile = AppProfile.formatAppProfile_(options);
 
   const reqOpts = {
-    parent: this.id,
+    parent: this.name,
     appProfileId: name,
     appProfile,
   };
@@ -219,7 +222,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         args.splice(1, 0, self.appProfile(name));
       }
@@ -287,7 +290,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
  *   const apiResponse = data[2];
  * });
  */
-Instance.prototype.createCluster = function(name, options, callback) {
+Instance.prototype.createCluster = function (name, options, callback) {
   var self = this;
 
   if (is.function(options)) {
@@ -296,7 +299,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
     clusterId: name,
   };
 
@@ -327,7 +330,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         args.splice(1, 0, self.cluster(name));
       }
@@ -419,7 +422,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Instance.prototype.createTable = function(name, options, callback) {
+Instance.prototype.createTable = function (name, options, callback) {
   var self = this;
 
   if (!name) {
@@ -434,7 +437,7 @@ Instance.prototype.createTable = function(name, options, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
     tableId: name,
     table: {
       // The granularity at which timestamps are stored in the table.
@@ -444,7 +447,7 @@ Instance.prototype.createTable = function(name, options, callback) {
   };
 
   if (options.splits) {
-    reqOpts.initialSplits = options.splits.map(function(key) {
+    reqOpts.initialSplits = options.splits.map(function (key) {
       return {
         key: key,
       };
@@ -452,7 +455,7 @@ Instance.prototype.createTable = function(name, options, callback) {
   }
 
   if (options.families) {
-    var columnFamilies = options.families.reduce(function(families, family) {
+    var columnFamilies = options.families.reduce(function (families, family) {
       if (is.string(family)) {
         family = {
           name: family,
@@ -478,7 +481,7 @@ Instance.prototype.createTable = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         var table = self.table(args[1].name);
         table.metadata = args[1];
@@ -496,7 +499,7 @@ Instance.prototype.createTable = function(name, options, callback) {
  * @param {string} name The name of the cluster.
  * @returns {Cluster}
  */
-Instance.prototype.cluster = function(name) {
+Instance.prototype.cluster = function (name) {
   return new Cluster(this, name);
 };
 
@@ -524,7 +527,7 @@ Instance.prototype.cluster = function(name) {
  *   var apiResponse = data[0];
  * });
  */
-Instance.prototype.delete = function(gaxOptions, callback) {
+Instance.prototype.delete = function (gaxOptions, callback) {
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
@@ -535,7 +538,7 @@ Instance.prototype.delete = function(gaxOptions, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'deleteInstance',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
@@ -567,13 +570,13 @@ Instance.prototype.delete = function(gaxOptions, callback) {
  *   var exists = data[0];
  * });
  */
-Instance.prototype.exists = function(gaxOptions, callback) {
+Instance.prototype.exists = function (gaxOptions, callback) {
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  this.getMetadata(gaxOptions, function(err) {
+  this.getMetadata(gaxOptions, function (err) {
     if (err) {
       if (err.code === 5) {
         callback(null, false);
@@ -615,7 +618,7 @@ Instance.prototype.exists = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Instance.prototype.get = function(gaxOptions, callback) {
+Instance.prototype.get = function (gaxOptions, callback) {
   var self = this;
 
   if (is.fn(gaxOptions)) {
@@ -623,7 +626,7 @@ Instance.prototype.get = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  this.getMetadata(gaxOptions, function(err, metadata) {
+  this.getMetadata(gaxOptions, function (err, metadata) {
     callback(err, err ? null : self, metadata);
   });
 };
@@ -656,7 +659,7 @@ Instance.prototype.get = function(gaxOptions, callback) {
  *   const appProfiles = data[0];
  * });
  */
-Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
+Instance.prototype.getAppProfiles = function (gaxOptions, callback) {
   var self = this;
 
   if (is.function(gaxOptions)) {
@@ -665,7 +668,7 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
   };
 
   this.bigtable.request(
@@ -675,13 +678,13 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
       reqOpts: reqOpts,
       gaxOpts: gaxOptions,
     },
-    function(err, resp) {
+    function (err, resp) {
       if (err) {
         callback(err);
         return;
       }
 
-      var appProfiles = resp.map(function(appProfileObj) {
+      var appProfiles = resp.map(function (appProfileObj) {
         var appProfile = self.appProfile(appProfileObj.name);
         appProfile.metadata = appProfileObj;
         return appProfile;
@@ -721,7 +724,7 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
  *   const clusters = data[0];
  * });
  */
-Instance.prototype.getClusters = function(gaxOptions, callback) {
+Instance.prototype.getClusters = function (gaxOptions, callback) {
   var self = this;
 
   if (is.function(gaxOptions)) {
@@ -730,7 +733,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
   };
 
   this.bigtable.request(
@@ -740,13 +743,13 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
       reqOpts: reqOpts,
       gaxOpts: gaxOptions,
     },
-    function(err, resp) {
+    function (err, resp) {
       if (err) {
         callback(err);
         return;
       }
 
-      var clusters = resp.clusters.map(function(clusterObj) {
+      var clusters = resp.clusters.map(function (clusterObj) {
         var cluster = self.cluster(clusterObj.name);
         cluster.metadata = clusterObj;
         return cluster;
@@ -782,7 +785,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Instance.prototype.getMetadata = function(gaxOptions, callback) {
+Instance.prototype.getMetadata = function (gaxOptions, callback) {
   var self = this;
 
   if (is.fn(gaxOptions)) {
@@ -795,11 +798,11 @@ Instance.prototype.getMetadata = function(gaxOptions, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'getInstance',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         self.metadata = args[1];
       }
@@ -861,7 +864,7 @@ Instance.prototype.getMetadata = function(gaxOptions, callback) {
  *   const tables = data[0];
  * });
  */
-Instance.prototype.getTables = function(options, callback) {
+Instance.prototype.getTables = function (options, callback) {
   var self = this;
 
   if (is.function(options)) {
@@ -870,7 +873,7 @@ Instance.prototype.getTables = function(options, callback) {
   }
 
   var reqOpts = extend({}, options, {
-    parent: this.id,
+    parent: this.name,
     view: Table.VIEWS[options.view || 'unspecified'],
   });
 
@@ -883,9 +886,9 @@ Instance.prototype.getTables = function(options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
-        args[1] = args[1].map(function(tableObj) {
+        args[1] = args[1].map(function (tableObj) {
           var name = tableObj.name.split('/').pop();
           var table = self.table(name);
           table.metadata = tableObj;
@@ -963,7 +966,7 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  *   var apiResponse = data[0];
  * });
  */
-Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
+Instance.prototype.setMetadata = function (metadata, gaxOptions, callback) {
   var self = this;
 
   if (is.fn(gaxOptions)) {
@@ -975,10 +978,10 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'updateInstance',
-      reqOpts: extend({name: this.id}, metadata),
+      reqOpts: extend({ name: this.name }, metadata),
       gaxOpts: gaxOptions,
     },
-    function(...args) {
+    function (...args) {
       if (args[1]) {
         self.metadata = args[1];
       }
@@ -1000,7 +1003,7 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('presidents');
  */
-Instance.prototype.table = function(name) {
+Instance.prototype.table = function (name) {
   return new Table(this, name);
 };
 

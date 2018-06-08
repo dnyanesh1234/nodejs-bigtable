@@ -119,9 +119,9 @@ describe('Bigtable/Table', function() {
   beforeEach(function() {
     INSTANCE = {
       bigtable: {},
-      id: 'a/b/c/d',
+      name: 'a/b/c/d',
     };
-    TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
+    TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
@@ -172,12 +172,12 @@ describe('Bigtable/Table', function() {
 
   describe('formatName_', function() {
     it('should format the table name to include the cluster name', function() {
-      var tableName = Table.formatName_(INSTANCE.id, TABLE_ID);
+      var tableName = Table.formatName_(INSTANCE.name, TABLE_ID);
       assert.strictEqual(tableName, TABLE_NAME);
     });
 
     it('should not re-format the table name', function() {
-      var tableName = Table.formatName_(INSTANCE.id, TABLE_NAME);
+      var tableName = Table.formatName_(INSTANCE.name, TABLE_NAME);
       assert.strictEqual(tableName, TABLE_NAME);
     });
   });
