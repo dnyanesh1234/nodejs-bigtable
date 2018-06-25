@@ -29,9 +29,8 @@ if (!PROJECT_ID) {
   throw new Error('Environment variables PROJECT_ID must be set!');
 }
 
-var bigtableOptions = {
-  projectId: PROJECT_ID,
-}
+var bigtableOptions = {projectId: PROJECT_ID};
+
 
 (async () => {
   try {
